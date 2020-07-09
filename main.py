@@ -1,39 +1,44 @@
-import pandas as pd
-import json
-import xlrd
-import datetime
-from ast import literal_eval
-
-EXCEL_FILE = 'example_data.xlsm'
-JSON_FILE = 'json_data.json'
+import sys
+from save_to_json_funcs import *
 
 
-def save_to_json(input_file, out_file):
+def main(argv):
+    """
+    Основная функция утилиты.
+    Выполняет проверку введенных данных.
+    После чего запускает функцию сохранения данных.
+    """
+    print('Performing checks...')
+    if len(argv) > 2:
+        return print(f'Error: To many arguments:{len(argv)}. Required: 1-2.\n'
+                     f'Please check if the file path have no spaces.')
+    slash = define_slash()
+    try:
+        in_file = argv[0]
+    except IndexError:
+        return print('Error: Enter excel filename with path.')
+    if slash in in_file:
+        in_f_path = in_file.rsplit(slash, 1)[0] + slash
+    else:
+        return print('Error: No path for input file.')
+    if not file_exists(in_file):
+        return print(f'Error: No such file at {in_f_path}.')
 
-    sheets = pd.ExcelFile(input_file).sheet_names
-    json_data = {}
-    for sheet in sheets:
-        df = pd.read_excel(input_file, index_col=None, header=0,
-                           sheet_name=sheet, na_values='null')
-
-        if sheet == 'loco_26':
-            # Определяем datemode для листа loco_26
-            book = xlrd.open_workbook(EXCEL_FILE)
-            xl_sheet = book.sheet_by_name(sheet)
-            datemode = xl_sheet.book.datemode
-            # Преобразуем поле с датой в datetime
-            df['REPAIR_DATE'] = \
-                pd.to_datetime(df['REPAIR_DATE']
-                               .map(lambda x: datetime.datetime(*xlrd.xldate_as_tuple(x, datemode))))
-
-        if sheet == 'acts_31L':
-            # Преобразуем json-строки в словари.
-            df['IT_SECTIONS'] = df['IT_SECTIONS'].apply(lambda x: literal_eval(str(x)))
-            df['IT_INVENT'] = df['IT_INVENT'].apply(lambda x: literal_eval(str(x)))
-
-        json_data[sheet] = json.loads(df.to_json(orient='records', force_ascii=False, date_format='iso'))
-    with open(out_file, 'w',  encoding='utf-8') as json_file:
-        json.dump(json_data, json_file, indent=2, ensure_ascii=False)
+    try:
+        out_file = argv[1]
+        out_file = define_outfile(out_file, in_file, in_f_path, slash)
+        if not out_file:
+            return print(f'Error: incorrect output file path or name {argv[1]}')
+    except IndexError:
+        out_file = in_file.rsplit('.', 1)[0] + '.json'
+    if file_exists(out_file):
+        return print(f'Error: Such json-file already exists: {out_file}')
+    if not file_is_valid(out_file):
+        return print(f'Error: Invalid output file: {out_file}')
+    print('Saving data to json. Please wait...')
+    save_to_json(in_file, out_file)
+    print(f'Data was successfully saved at:\n {out_file}')
 
 
-save_to_json(EXCEL_FILE, JSON_FILE)
+if __name__ == '__main__':
+    main(sys.argv[1:])

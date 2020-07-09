@@ -1,0 +1,35 @@
+Если путь выходного файла не указан, то файл должен быть сохранен в ту же папку, где лежит входной файл. 
+    python main.py E:\Programs\Python\testTask\exel_to_json\example_data.xlsm test1.json
+    OK
+
+Если не указано имя выходного файла, то выходной файл принимает имя входного файла и расширение ".json"
+    python main.py E:\Programs\Python\testTask\exel_to_json\example_data.xlsm E:\Programs\Python\testTask\exel_to_json\tests\
+    OK
+
+Утилита должна проверять наличие выходного файла, и если файл есть, то утилита должна выдать в консоль сообщение и не перезаписывать выходной файл.
+    python main.py E:\Programs\Python\testTask\exel_to_json\example_data.xlsm
+    OK
+    python main.py E:\Programs\Python\testTask\exel_to_json\example_data.xlsm E:\Programs\Python\testTask\exel_to_json\
+    OK
+    python main.py E:\Programs\Python\testTask\exel_to_json\example_data.xlsm
+    OK
+    python main.py E:\Programs\Python\testTask\exel_to_json\example_data.xlsm E:\Programs\Python\testTask\exel_to_json\tests\
+    OK
+
+Не указанно имя входного файла:
+    python main.py
+    OK
+Не указан путь входного файла:
+    python main.py example_data.xlsm
+    OK
+
+Указан только путь входного файла без имени:
+    python main.py E:\Programs\Python\testTask\exel_to_json\
+    OK
+
+Некорректные входные данные:
+    python main.py some_path\some_file.xml
+    OK
+    python main.py E:\Programs\Python\testTask\exel_to_json\example_data.xlsm some_path\some_file.xml
+    OK
+    python main.py E:\Programs\Python\testTask\exel_to_json\example_data.xlsm some_path\some_file.json

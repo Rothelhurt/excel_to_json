@@ -1,4 +1,7 @@
+__pycache__/
 .idea/
 env/
 *.json
 *.xlsm
+test.py
+
