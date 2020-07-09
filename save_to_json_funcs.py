@@ -57,7 +57,6 @@ def define_outfile(out_file, in_file, in_f_path, slash):
     return out_file
 
 
-
 def file_exists(file):
     """
     Проверяет, существует ли файл.
@@ -76,6 +75,10 @@ def save_to_json(input_file, out_file):
     for sheet in sheets:
         df = pd.read_excel(input_file, index_col=None, header=0,
                            sheet_name=sheet, na_values='null')
+        if sheet == 'loco_1':
+            # Для колонки с пустыми значениями меняем dtype на Int64,
+            # для корректрого сохранения целых чисел.
+            df['FINAL_GUILTY_FIRM'] = df['FINAL_GUILTY_FIRM'].astype('Int64')
 
         if sheet == 'loco_26':
             # Определяем datemode для листа loco_26
